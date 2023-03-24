@@ -1,23 +1,49 @@
-import logo from './logo.svg';
+import { useContext, useEffect, useState } from 'react';
+import { Col, Row } from 'react-bootstrap';
 import './App.css';
+import CITIES_LIST from './citiesList';
+import MapDisplay from './components/map-display/map-display.component';
+import SideBar from './components/sidebar/siderbar.component';
+import { CityContext } from './context/city.context';
 
 function App() {
+  const [cities, setCities] = useState([]);
+  const [searchField, setSearchField] = useState(''); 
+  const [filteredCities, setFilterCities] = useState(cities);
+  const { selectCity } = useContext(CityContext);
+  console.log(selectCity);
+
+
+  useEffect(
+    () => {
+      setCities(CITIES_LIST);
+    },
+  []);
+
+  useEffect(
+    () => {
+      const newFilterCities = cities.filter((city) => {
+        return city.name.toLocaleLowerCase().includes(searchField);
+      });
+      setFilterCities(newFilterCities);
+    },
+  [cities, searchField]);
+
+  const onSearchChange = (event) => {
+    const searchFieldString = event.target.value.toLocaleLowerCase();
+    setSearchField(searchFieldString);
+  };
+
+
+  
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      
+      <SideBar cities={filteredCities} onChangeHandler={onSearchChange}/>
+      
+      <MapDisplay />
+      
     </div>
   );
 }
